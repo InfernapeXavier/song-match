@@ -23,7 +23,6 @@ import gettext
 from ask_sdk_s3.adapter import S3Adapter
 s3_adapter = S3Adapter(bucket_name=os.environ["S3_PERSISTENCE_BUCKET"])
 
-
 logger = logging.getLogger(__name__)
 logger.setLevel(logging.INFO)
 
@@ -32,7 +31,6 @@ class LaunchRequestHandler(AbstractRequestHandler):
     """
     Handler for Skill Launch
     """
-
     def can_handle(self, handler_input):
         return is_request_type("LaunchRequest")(handler_input)
 
@@ -46,7 +44,6 @@ class LaunchRequestHandler(AbstractRequestHandler):
 
 class CaptureArtistIntentHandler(AbstractRequestHandler):
     """Handler for Capturing the Favorite Artist."""
-
     def can_handle(self, handler_input):
         # type: (HandlerInput) -> bool
         return is_intent_name("CaptureArtistIntent")(handler_input)
@@ -60,17 +57,12 @@ class CaptureArtistIntentHandler(AbstractRequestHandler):
 
         speak_output = capturedArtist(artist) + " " + startQuiz(artist)
 
-        return (
-            handler_input.response_builder
-            .speak(speak_output)
-            .ask(welcomeReprompt)
-            .response
-        )
+        return (handler_input.response_builder.speak(speak_output).ask(
+            welcomeReprompt).response)
 
 
 class HelpIntentHandler(AbstractRequestHandler):
     """Handler for Help Intent."""
-
     def can_handle(self, handler_input):
         # type: (HandlerInput) -> bool
         return ask_utils.is_intent_name("AMAZON.HelpIntent")(handler_input)
@@ -81,37 +73,27 @@ class HelpIntentHandler(AbstractRequestHandler):
         data = handler_input.attributes_manager.request_attributes["_"]
         speak_output = data["HELP_MSG"]
 
-        return (
-            handler_input.response_builder
-            .speak(speak_output)
-            .ask(speak_output)
-            .response
-        )
+        return (handler_input.response_builder.speak(speak_output).ask(
+            speak_output).response)
 
 
 class CancelOrStopIntentHandler(AbstractRequestHandler):
     """Single handler for Cancel and Stop Intent."""
-
     def can_handle(self, handler_input):
         # type: (HandlerInput) -> bool
-        return (ask_utils.is_intent_name("AMAZON.CancelIntent")(handler_input) or
+        return (ask_utils.is_intent_name("AMAZON.CancelIntent")(handler_input)
+                or
                 ask_utils.is_intent_name("AMAZON.StopIntent")(handler_input))
 
     def handle(self, handler_input):
         # type: (HandlerInput) -> Response
-        data = handler_input.attributes_manager.request_attributes["_"]
-        speak_output = data["GOODBYE_MSG"]
+        speak_output = goodbyeMessage
 
-        return (
-            handler_input.response_builder
-            .speak(speak_output)
-            .response
-        )
+        return (handler_input.response_builder.speak(speak_output).response)
 
 
 class SessionEndedRequestHandler(AbstractRequestHandler):
     """Handler for Session End."""
-
     def can_handle(self, handler_input):
         # type: (HandlerInput) -> bool
         return ask_utils.is_request_type("SessionEndedRequest")(handler_input)
@@ -130,7 +112,6 @@ class IntentReflectorHandler(AbstractRequestHandler):
     for your intents by defining them above, then also adding them to the request
     handler chain below.
     """
-
     def can_handle(self, handler_input):
         # type: (HandlerInput) -> bool
         return ask_utils.is_request_type("IntentRequest")(handler_input)
@@ -142,11 +123,9 @@ class IntentReflectorHandler(AbstractRequestHandler):
         speak_output = data["REFLECTOR_MSG"].format(intent_name)
 
         return (
-            handler_input.response_builder
-            .speak(speak_output)
+            handler_input.response_builder.speak(speak_output)
             # .ask("add a reprompt if you want to keep the session open for the user to respond")
-            .response
-        )
+            .response)
 
 
 class CatchAllExceptionHandler(AbstractExceptionHandler):
@@ -154,7 +133,6 @@ class CatchAllExceptionHandler(AbstractExceptionHandler):
     stating the request handler chain is not found, you have not implemented a handler for
     the intent being invoked or included it in the skill builder below.
     """
-
     def can_handle(self, handler_input, exception):
         # type: (HandlerInput, Exception) -> bool
         return True
@@ -165,17 +143,13 @@ class CatchAllExceptionHandler(AbstractExceptionHandler):
         data = handler_input.attributes_manager.request_attributes["_"]
         speak_output = data["ERROR_MSG"]
 
-        return (
-            handler_input.response_builder
-            .speak(speak_output)
-            .ask(speak_output)
-            .response
-        )
+        return (handler_input.response_builder.speak(speak_output).ask(
+            speak_output).response)
+
 
 # The SkillBuilder object acts as the entry point for your skill, routing all request and response
 # payloads to the handlers above. Make sure any new handlers or interceptors you've
 # defined are included below. The order matters - they're processed top to bottom.
-
 
 sb = CustomSkillBuilder(persistence_adapter=s3_adapter)
 

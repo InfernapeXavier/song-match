@@ -11,3 +11,8 @@ def startQuiz(artistName):
     builder = "Now, please answer these three questions to help me match you to your " + \
         artistName + " song!"
     return builder
+
+
+helpWithArtistMessage = "You can tell me the name of your favourite singer or band and I'll take note."
+goodbyeMessage = "Goodbye!"
+errorMessage = "Sorry, I couldn't understand what you said. Can you reformulate?"
