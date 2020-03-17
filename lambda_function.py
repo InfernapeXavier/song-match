@@ -31,6 +31,7 @@ class LaunchRequestHandler(AbstractRequestHandler):
     """
     Handler for Skill Launch
     """
+
     def can_handle(self, handler_input):
         return is_request_type("LaunchRequest")(handler_input)
 
@@ -44,6 +45,7 @@ class LaunchRequestHandler(AbstractRequestHandler):
 
 class CaptureArtistIntentHandler(AbstractRequestHandler):
     """Handler for Capturing the Favorite Artist."""
+
     def can_handle(self, handler_input):
         # type: (HandlerInput) -> bool
         return is_intent_name("CaptureArtistIntent")(handler_input)
@@ -52,8 +54,10 @@ class CaptureArtistIntentHandler(AbstractRequestHandler):
         # type: (HandlerInput) -> Response
 
         slots = handler_input.request_envelope.request.intent.slots
+        attr = handler_input.attributes_manager.session_attributes
 
         artist = slots["artistName"].value
+        attr["artist"] = artist
 
         speak_output = capturedArtist(artist) + " " + startQuiz(artist)
 
@@ -61,8 +65,24 @@ class CaptureArtistIntentHandler(AbstractRequestHandler):
             welcomeReprompt).response)
 
 
+class StartQuizIntentHandler(AbstractRequestHandler):
+    """Handler for Starting the Quiz."""
+
+    def can_handle(self, handler_input):
+        # type: (HandlerInput) -> bool
+        return is_intent_name("StartQuizIntent")(handler_input)
+
+    def handle(self, handler_input):
+        # type: (HandlerInput) -> Response
+
+        speak_output = "Question 1"
+
+        return (handler_input.response_builder.speak(speak_output).response)
+
+
 class HelpIntentHandler(AbstractRequestHandler):
     """Handler for Help Intent."""
+
     def can_handle(self, handler_input):
         # type: (HandlerInput) -> bool
         return ask_utils.is_intent_name("AMAZON.HelpIntent")(handler_input)
@@ -70,7 +90,13 @@ class HelpIntentHandler(AbstractRequestHandler):
     def handle(self, handler_input):
         # type: (HandlerInput) -> Response
 
-        speak_output = helpWithArtistMessage
+        attr = handler_input.attributes_manager.session_attributes
+
+        if "artist" in attr:
+            artist = attr["artist"]
+            speak_output = helpWithQuizMessage(artist)
+        else:
+            speak_output = helpWithArtistMessage
 
         return (handler_input.response_builder.speak(speak_output).ask(
             speak_output).response)
@@ -78,6 +104,7 @@ class HelpIntentHandler(AbstractRequestHandler):
 
 class CancelOrStopIntentHandler(AbstractRequestHandler):
     """Single handler for Cancel and Stop Intent."""
+
     def can_handle(self, handler_input):
         # type: (HandlerInput) -> bool
         return (ask_utils.is_intent_name("AMAZON.CancelIntent")(handler_input)
@@ -93,6 +120,7 @@ class CancelOrStopIntentHandler(AbstractRequestHandler):
 
 class SessionEndedRequestHandler(AbstractRequestHandler):
     """Handler for Session End."""
+
     def can_handle(self, handler_input):
         # type: (HandlerInput) -> bool
         return ask_utils.is_request_type("SessionEndedRequest")(handler_input)
@@ -111,6 +139,7 @@ class IntentReflectorHandler(AbstractRequestHandler):
     for your intents by defining them above, then also adding them to the request
     handler chain below.
     """
+
     def can_handle(self, handler_input):
         # type: (HandlerInput) -> bool
         return ask_utils.is_request_type("IntentRequest")(handler_input)
@@ -132,6 +161,7 @@ class CatchAllExceptionHandler(AbstractExceptionHandler):
     stating the request handler chain is not found, you have not implemented a handler for
     the intent being invoked or included it in the skill builder below.
     """
+
     def can_handle(self, handler_input, exception):
         # type: (HandlerInput, Exception) -> bool
         return True
@@ -153,6 +183,7 @@ sb = CustomSkillBuilder(persistence_adapter=s3_adapter)
 
 sb.add_request_handler(LaunchRequestHandler())
 sb.add_request_handler(CaptureArtistIntentHandler())
+sb.add_request_handler(StartQuizIntentHandler())
 sb.add_request_handler(HelpIntentHandler())
 sb.add_request_handler(CancelOrStopIntentHandler())
 sb.add_request_handler(SessionEndedRequestHandler())
