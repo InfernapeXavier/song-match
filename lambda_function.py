@@ -70,8 +70,7 @@ class HelpIntentHandler(AbstractRequestHandler):
     def handle(self, handler_input):
         # type: (HandlerInput) -> Response
 
-        data = handler_input.attributes_manager.request_attributes["_"]
-        speak_output = data["HELP_MSG"]
+        speak_output = helpWithArtistMessage
 
         return (handler_input.response_builder.speak(speak_output).ask(
             speak_output).response)
@@ -140,8 +139,7 @@ class CatchAllExceptionHandler(AbstractExceptionHandler):
     def handle(self, handler_input, exception):
         # type: (HandlerInput, Exception) -> Response
         logger.error(exception, exc_info=True)
-        data = handler_input.attributes_manager.request_attributes["_"]
-        speak_output = data["ERROR_MSG"]
+        speak_output = errorMessage
 
         return (handler_input.response_builder.speak(speak_output).ask(
             speak_output).response)
