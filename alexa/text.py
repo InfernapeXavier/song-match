@@ -22,6 +22,7 @@ def startQuiz(artistName):
 helpWithArtistMessage = "You can tell me the name of your favourite singer or band and I'll take note."
 goodbyeMessage = "Goodbye!"
 errorMessage = "Sorry, I couldn't understand what you said. Can you reformulate?"
+fallbackErrorMessage = "Sorry, it seems like my dumb developer forgot to include that feature. However, for now, you can try saying Start Quiz!"
 
 
 def helpWithQuizMessage(artistName):

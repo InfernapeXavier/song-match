@@ -156,6 +156,22 @@ class IntentReflectorHandler(AbstractRequestHandler):
             .response)
 
 
+class FallbackIntentHandler(AbstractRequestHandler):
+    """The fallback intent handles all "Unknown" requests.
+    """
+
+    def can_handle(self, handler_input):
+        # type: (HandlerInput) -> bool
+        return ask_utils.is_request_type("FallbackIntent")(handler_input)
+
+    def handle(self, handler_input):
+        # type: (HandlerInput) -> Response
+
+        speak_output = fallbackErrorMessage
+
+        return handler_input.response_builder.speak(speak_output).response
+
+
 class CatchAllExceptionHandler(AbstractExceptionHandler):
     """Generic error handling to capture any syntax or routing errors. If you receive an error
     stating the request handler chain is not found, you have not implemented a handler for
@@ -184,6 +200,7 @@ sb = CustomSkillBuilder(persistence_adapter=s3_adapter)
 sb.add_request_handler(LaunchRequestHandler())
 sb.add_request_handler(CaptureArtistIntentHandler())
 sb.add_request_handler(StartQuizIntentHandler())
+sb.add_request_handler(FallbackIntentHandler())
 sb.add_request_handler(HelpIntentHandler())
 sb.add_request_handler(CancelOrStopIntentHandler())
 sb.add_request_handler(SessionEndedRequestHandler())
