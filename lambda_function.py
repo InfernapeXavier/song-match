@@ -75,7 +75,15 @@ class StartQuizIntentHandler(AbstractRequestHandler):
     def handle(self, handler_input):
         # type: (HandlerInput) -> Response
 
-        speak_output = "Question 1"
+        # Handle premature "Start Quiz"
+        attr = handler_input.attributes_manager.session_attributes
+
+        if "artist" in attr:
+            artist = attr["artist"]
+            speak_output = "Question 1"
+        else:
+            speak_output = helpWithArtistMessage
+            CaptureArtistIntentHandler.handle(handler_input)
 
         return (handler_input.response_builder.speak(speak_output).response)
 
@@ -157,19 +165,18 @@ class IntentReflectorHandler(AbstractRequestHandler):
 
 
 class FallbackIntentHandler(AbstractRequestHandler):
-    """The fallback intent handles all "Unknown" requests.
-    """
+    """The fallback intent handles all "Unknown" requests."""
 
     def can_handle(self, handler_input):
         # type: (HandlerInput) -> bool
-        return ask_utils.is_request_type("FallbackIntent")(handler_input)
+        return ask_utils.is_intent_name("AMAZON.FallbackIntent")(handler_input)
 
     def handle(self, handler_input):
         # type: (HandlerInput) -> Response
 
         speak_output = fallbackErrorMessage
 
-        return handler_input.response_builder.speak(speak_output).response
+        return (handler_input.response_builder.speak(speak_output).response)
 
 
 class CatchAllExceptionHandler(AbstractExceptionHandler):

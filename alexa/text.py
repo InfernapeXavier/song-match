@@ -4,7 +4,7 @@ emotionEnd = '</amazon:emotion>'
 
 # Welcome/Start Messages
 welcomeMessage = "Hello! Welcome to Song Match. I'll help you find the song that best defines you! Who is your favourite artist?"
-welcomeReprompt = "My favourite artist is Ariana Grande. Who is your favourite?"
+welcomeReprompt = "I'm sorry, I didn't understand you. My favourite artist is Alan Walker,  Who is your favourite?"
 
 
 def capturedArtist(artistName):
