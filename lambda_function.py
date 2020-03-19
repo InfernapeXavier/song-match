@@ -79,11 +79,9 @@ class StartQuizIntentHandler(AbstractRequestHandler):
         attr = handler_input.attributes_manager.session_attributes
 
         if "artist" in attr:
-            artist = attr["artist"]
             speak_output = "Question 1"
         else:
             speak_output = helpWithArtistMessage
-            CaptureArtistIntentHandler.handle(handler_input)
 
         return (handler_input.response_builder.speak(speak_output).response)
 
