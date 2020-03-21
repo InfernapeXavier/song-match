@@ -237,23 +237,6 @@ class FallbackIntentHandler(AbstractRequestHandler):
         return (handler_input.response_builder.speak(speak_output).response)
 
 
-class StartOverIntentHandler(AbstractRequestHandler):
-    """The fallback intent handles "start over"."""
-
-    def can_handle(self, handler_input):
-        # type: (HandlerInput) -> bool
-        return ask_utils.is_intent_name("AMAZON.StartOverIntent")(handler_input)
-
-    def handle(self, handler_input):
-        # type: (HandlerInput) -> Response
-        handler_input.attributes_manager.session_attributes = {}
-        attr["state"] = "INITIALIZING"
-
-        speak_output = helpWithArtistMessage
-
-        return (handler_input.response_builder.speak(speak_output).response)
-
-
 class CatchAllExceptionHandler(AbstractExceptionHandler):
     """Generic error handling to capture any syntax or routing errors. If you receive an error
     stating the request handler chain is not found, you have not implemented a handler for
@@ -284,7 +267,6 @@ sb.add_request_handler(CaptureArtistIntentHandler())
 sb.add_request_handler(StartQuizIntentHandler())
 sb.add_request_handler(QuizAnswerHandler())
 sb.add_request_handler(FallbackIntentHandler())
-sb.add_request_handler(StartOverIntentHandler())
 sb.add_request_handler(HelpIntentHandler())
 sb.add_request_handler(CancelOrStopIntentHandler())
 sb.add_request_handler(SessionEndedRequestHandler())
