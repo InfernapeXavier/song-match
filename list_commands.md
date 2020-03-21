@@ -2,6 +2,7 @@
 
 alexa open song match
 alan walker
+theory of a deadman
 help me
 stop this
 start quiz
@@ -15,3 +16,9 @@ dinner
 venice
 hawaii
 start over
+harry potter
+lord of the rings
+drama
+romance
+soccer
+football

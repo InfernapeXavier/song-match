@@ -1,5 +1,7 @@
 from alexa.fetcher import *
 
+# TODO: Add SSML
+
 # SSML Builders
 excitedStart = '<amazon:emotion name="excited" intensity="medium">'
 emotionEnd = '</amazon:emotion>'

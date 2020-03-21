@@ -199,27 +199,27 @@ class SessionEndedRequestHandler(AbstractRequestHandler):
         return handler_input.response_builder.response
 
 
-class IntentReflectorHandler(AbstractRequestHandler):
-    """The intent reflector is used for interaction model testing and debugging.
-    It will simply repeat the intent the user said. You can create custom handlers
-    for your intents by defining them above, then also adding them to the request
-    handler chain below.
-    """
+# class IntentReflectorHandler(AbstractRequestHandler):
+#     """The intent reflector is used for interaction model testing and debugging.
+#     It will simply repeat the intent the user said. You can create custom handlers
+#     for your intents by defining them above, then also adding them to the request
+#     handler chain below.
+#     """
 
-    def can_handle(self, handler_input):
-        # type: (HandlerInput) -> bool
-        return ask_utils.is_request_type("IntentRequest")(handler_input)
+#     def can_handle(self, handler_input):
+#         # type: (HandlerInput) -> bool
+#         return ask_utils.is_request_type("IntentRequest")(handler_input)
 
-    def handle(self, handler_input):
-        # type: (HandlerInput) -> Response
-        data = handler_input.attributes_manager.request_attributes["_"]
-        intent_name = ask_utils.get_intent_name(handler_input)
-        speak_output = data["REFLECTOR_MSG"].format(intent_name)
+#     def handle(self, handler_input):
+#         # type: (HandlerInput) -> Response
+#         data = handler_input.attributes_manager.request_attributes["_"]
+#         intent_name = ask_utils.get_intent_name(handler_input)
+#         speak_output = data["REFLECTOR_MSG"].format(intent_name)
 
-        return (
-            handler_input.response_builder.speak(speak_output)
-            # .ask("add a reprompt if you want to keep the session open for the user to respond")
-            .response)
+#         return (
+#             handler_input.response_builder.speak(speak_output)
+#             # .ask("add a reprompt if you want to keep the session open for the user to respond")
+#             .response)
 
 
 class FallbackIntentHandler(AbstractRequestHandler):
@@ -249,11 +249,25 @@ class CatchAllExceptionHandler(AbstractExceptionHandler):
 
     def handle(self, handler_input, exception):
         # type: (HandlerInput, Exception) -> Response
-        logger.error(exception, exc_info=True)
-        speak_output = errorMessage
+        attr = handler_input.attributes_manager.session_attributes
+        if attr["state"] == "INITIALIZING":
+            if "artist" in attr:
+                artist = attr["artist"]
+                speak_output = helpWithQuizMessage(artist)
+            else:
+                speak_output = helpWithArtistMessage
+        else:
+            if "song" in attr:
+                song = attr["song"]
+                artist = attr["artist"]
+                speak_output = repeatFinal(artist, song)
+            else:
+                question = attr["questionNumber"]
+                artist = attr["artist"]
+                speak_output = questionHelp(artist, question)
 
         return (handler_input.response_builder.speak(speak_output).ask(
-            speak_output).response)
+            errorMessage).response)
 
 
 # The SkillBuilder object acts as the entry point for your skill, routing all request and response
@@ -271,7 +285,7 @@ sb.add_request_handler(HelpIntentHandler())
 sb.add_request_handler(CancelOrStopIntentHandler())
 sb.add_request_handler(SessionEndedRequestHandler())
 # make sure IntentReflectorHandler is last so it doesn't override your custom intent handlers
-sb.add_request_handler(IntentReflectorHandler())
+# sb.add_request_handler(IntentReflectorHandler())
 
 sb.add_exception_handler(CatchAllExceptionHandler())
 
