@@ -1,17 +1,21 @@
 #  Scratch File to test logic
 
+from pathlib import Path  # python3 only
+from spotipy.oauth2 import SpotifyClientCredentials
+import spotipy
+import sys
+from dotenv import load_dotenv
 
-def getScore(current, answer):
-    answer = answer.lower()
-    score = current
-    ans = ['red', 'movie', 'venice', 'harry potter', 'drama', 'soccer']
-    if answer in ans:
-        score.append('1')
-        return score
-    else:
-        score.append('2')
-        return score
+# Loading Spotify API Data from Env
+load_dotenv()
 
+if len(sys.argv) > 1:
+    urn = sys.argv[1]
+else:
+    urn = 'spotify:artist:3jOstUTkEu2JkjvRdBA5Gu'
 
-score = getScore('', 'purple')
-print(score)
+sp = spotipy.Spotify(client_credentials_manager=SpotifyClientCredentials())
+response = sp.artist_top_tracks(urn)
+
+for track in response['tracks']:
+    print(track['name'])
