@@ -1,3 +1,5 @@
+from alexa.fetcher import *
+
 # SSML Builders
 excitedStart = '<amazon:emotion name="excited" intensity="medium">'
 emotionEnd = '</amazon:emotion>'
@@ -83,10 +85,12 @@ def getScore(current, answer):
 
 
 # Fetching Song
-def getSong(score):
-    return score
+def getSong(artistName, score):
+    trackList = songFetcher(artistName)
+    index = getIndex(score)
+    return "Your " + artistName + " song is " + trackList[index] + "."
 
 
 # Repeat in case someone is stuck at the end
 def repeatFinal(artistName, song):
-    return "Your " + artistName + " song is " + song + ". To replay say Start Over, to end say Bye!"
+    return "Your " + artistName + " song is " + song + "."

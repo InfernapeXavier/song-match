@@ -130,11 +130,11 @@ class QuizAnswerHandler(AbstractRequestHandler):
             return (handler_input.response_builder.speak(speak_output).ask(reprompt).response)
 
         else:
-            attr['song'] = getSong(score)
+            attr['song'] = getSong(artistName, score)
             song = attr['song']
-            speak_output = getSong(song)
+            speak_output = song
 
-            return (handler_input.response_builder.speak(speak_output).response)
+            return (handler_input.response_builder.speak(speak_output).set_should_end_session(True).response)
 
 
 class HelpIntentHandler(AbstractRequestHandler):
