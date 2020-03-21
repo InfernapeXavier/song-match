@@ -11,7 +11,7 @@ from ask_sdk_core.dispatch_components import AbstractRequestInterceptor
 from ask_sdk_core.dispatch_components import AbstractExceptionHandler
 from ask_sdk_core.dispatch_components import AbstractRequestHandler
 from ask_sdk_core.skill_builder import CustomSkillBuilder
-from alexa.text import *
+from alexa.util import *
 import logging
 import ask_sdk_core.utils as ask_utils
 import os
@@ -19,7 +19,6 @@ import json
 import locale
 import requests
 import calendar
-import gettext
 from ask_sdk_s3.adapter import S3Adapter
 s3_adapter = S3Adapter(bucket_name=os.environ["S3_PERSISTENCE_BUCKET"])
 
@@ -38,6 +37,8 @@ class LaunchRequestHandler(AbstractRequestHandler):
     def handle(self, handler_input):
         speech = welcomeMessage
         reprompt = welcomeReprompt
+        attr = handler_input.attributes_manager.session_attributes
+        attr["state"] = "INITIALIZING"
 
         handler_input.response_builder.speak(speech).ask(reprompt)
         return handler_input.response_builder.response
@@ -60,9 +61,10 @@ class CaptureArtistIntentHandler(AbstractRequestHandler):
         attr["artist"] = artist
 
         speak_output = capturedArtist(artist) + " " + startQuiz(artist)
+        reprompt = welcomeReprompt
 
         return (handler_input.response_builder.speak(speak_output).ask(
-            welcomeReprompt).response)
+            reprompt).response)
 
 
 class StartQuizIntentHandler(AbstractRequestHandler):
@@ -79,11 +81,60 @@ class StartQuizIntentHandler(AbstractRequestHandler):
         attr = handler_input.attributes_manager.session_attributes
 
         if "artist" in attr:
-            speak_output = "Question 1"
+            # Set State to "In Quiz"
+            attr["state"] = "QUIZ"
+            attr["score"] = ""
+            attr["questionNumber"] = 1
+            questionNumber = attr["questionNumber"]
+            artistName = attr["artist"]
+            speak_output = getQuestion(artistName, questionNumber)
+            reprompt = questionHelp(artistName, questionNumber)
+
+            return (handler_input.response_builder.speak(speak_output).ask(reprompt).response)
+
         else:
             speak_output = helpWithArtistMessage
 
-        return (handler_input.response_builder.speak(speak_output).response)
+            return (handler_input.response_builder.speak(speak_output).ask(reprompt).response)
+
+
+class QuizAnswerHandler(AbstractRequestHandler):
+    """Handler for Answers to the Quiz."""
+
+    def can_handle(self, handler_input):
+        # type: (HandlerInput) -> bool
+        attr = handler_input.attributes_manager.session_attributes
+        return is_intent_name("AnswerIntent")(handler_input)
+
+    def handle(self, handler_input):
+        # type: (HandlerInput) -> Response
+
+        # Handle "score"
+        slots = handler_input.request_envelope.request.intent.slots
+        attr = handler_input.attributes_manager.session_attributes
+
+        answer = slots["answer"].value
+        score = attr["score"]
+        attr["score"] = getScore(score, answer)
+        score = attr["score"]
+
+        # speak_output = "Score is " + attr["score"]
+        attr["questionNumber"] += 1
+        artistName = attr["artist"]
+        questionNumber = attr["questionNumber"]
+
+        if questionNumber < 4:
+            speak_output = getQuestion(artistName, questionNumber)
+            reprompt = questionHelp(artistName, questionNumber)
+
+            return (handler_input.response_builder.speak(speak_output).ask(reprompt).response)
+
+        else:
+            attr['song'] = getSong(score)
+            song = attr['song']
+            speak_output = getSong(song)
+
+            return (handler_input.response_builder.speak(speak_output).response)
 
 
 class HelpIntentHandler(AbstractRequestHandler):
@@ -97,15 +148,24 @@ class HelpIntentHandler(AbstractRequestHandler):
         # type: (HandlerInput) -> Response
 
         attr = handler_input.attributes_manager.session_attributes
-
-        if "artist" in attr:
-            artist = attr["artist"]
-            speak_output = helpWithQuizMessage(artist)
+        if attr["state"] == "INITIALIZING":
+            if "artist" in attr:
+                artist = attr["artist"]
+                speak_output = helpWithQuizMessage(artist)
+            else:
+                speak_output = helpWithArtistMessage
         else:
-            speak_output = helpWithArtistMessage
+            if "song" in attr:
+                song = attr["song"]
+                artist = attr["artist"]
+                speak_output = repeatFinal(artist, song)
+            else:
+                question = attr["questionNumber"]
+                artist = attr["artist"]
+                speak_output = questionHelp(artist, question)
 
         return (handler_input.response_builder.speak(speak_output).ask(
-            speak_output).response)
+            errorMessage).response)
 
 
 class CancelOrStopIntentHandler(AbstractRequestHandler):
@@ -177,6 +237,23 @@ class FallbackIntentHandler(AbstractRequestHandler):
         return (handler_input.response_builder.speak(speak_output).response)
 
 
+class StartOverIntentHandler(AbstractRequestHandler):
+    """The fallback intent handles "start over"."""
+
+    def can_handle(self, handler_input):
+        # type: (HandlerInput) -> bool
+        return ask_utils.is_intent_name("AMAZON.StartOverIntent")(handler_input)
+
+    def handle(self, handler_input):
+        # type: (HandlerInput) -> Response
+        handler_input.attributes_manager.session_attributes = {}
+        attr["state"] = "INITIALIZING"
+
+        speak_output = helpWithArtistMessage
+
+        return (handler_input.response_builder.speak(speak_output).response)
+
+
 class CatchAllExceptionHandler(AbstractExceptionHandler):
     """Generic error handling to capture any syntax or routing errors. If you receive an error
     stating the request handler chain is not found, you have not implemented a handler for
@@ -205,7 +282,9 @@ sb = CustomSkillBuilder(persistence_adapter=s3_adapter)
 sb.add_request_handler(LaunchRequestHandler())
 sb.add_request_handler(CaptureArtistIntentHandler())
 sb.add_request_handler(StartQuizIntentHandler())
+sb.add_request_handler(QuizAnswerHandler())
 sb.add_request_handler(FallbackIntentHandler())
+sb.add_request_handler(StartOverIntentHandler())
 sb.add_request_handler(HelpIntentHandler())
 sb.add_request_handler(CancelOrStopIntentHandler())
 sb.add_request_handler(SessionEndedRequestHandler())

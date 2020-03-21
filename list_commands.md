@@ -8,3 +8,9 @@ start quiz
 sorry
 gibberish
 trigger fall back
+purple
+red
+movie
+dinner
+venice
+hawaii
