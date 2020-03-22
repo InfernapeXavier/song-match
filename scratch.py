@@ -115,14 +115,12 @@ def getSongByAnswer(artistName, score):
     artist = db[artistName]
     updateCount(artistName)
     song = artist.find_one({"answer": score})
-    track = getUniqueSong(artistName)
     if song == None:
-
+        track = getUniqueSong(artistName)
         songDocument = {
             "answer": score,
             "song": track
         }
-
         artist.insert_one(songDocument)
         song = artist.find_one({"answer": score})
     return song["song"]
