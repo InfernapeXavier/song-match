@@ -66,6 +66,21 @@ def countChecker(artistName):
     return accessCount
 
 
+def insertSong(artistName, song):
+    songlist = db.songlist
+    listData = songlist.find_one({"artist": artistName})
+    if listData == None:
+        listDocument = {
+            "artist": artistName,
+            "tracks": [song]
+        }
+    else:
+        listData = songlist.update_one(
+            {"artist": artistName},
+            {"addToSet": {"tracks": song}}
+        )
+
+
 def getSong(artistName):
     # gets the song name
     accessCount = countChecker(artistName)
@@ -73,6 +88,7 @@ def getSong(artistName):
     if accessCount < 10:
         tracks = topTenFetcher(artistName)
         song = secrets.choice(tracks)
+        insertSong(artistName, song)
         return song
     else:
         return ("More than 10")
@@ -89,8 +105,15 @@ def getUniqueSong(artistName):
     return track
 
 
+def updateCount(artistName):
+    count = db.count
+    countData = count.update_one(
+        {"artist": artistName}, {"$inc": {"count": 1}})
+
+
 def getSongByAnswer(artistName, score):
     artist = db[artistName]
+    updateCount(artistName)
     song = artist.find_one({"answer": score})
     track = getUniqueSong(artistName)
     if song == None:
@@ -106,5 +129,5 @@ def getSongByAnswer(artistName, score):
 
 
 artist = "alan walker"
-score = '111'
-print(getSongByAnswer(artist, score))
+for score in range(0, 11):
+    print(getSongByAnswer(artist, score))
