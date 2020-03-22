@@ -69,15 +69,18 @@ def countChecker(artistName):
 def insertSong(artistName, song):
     songlist = db.songlist
     listData = songlist.find_one({"artist": artistName})
+    li = []
+    li.append(song)
     if listData == None:
         listDocument = {
             "artist": artistName,
-            "tracks": [song]
+            "tracks": li
         }
+        songlist.insert_one(listDocument)
     else:
         listData = songlist.update_one(
             {"artist": artistName},
-            {"addToSet": {"tracks": song}}
+            {"$addToSet": {"tracks": song}}
         )
 
 
