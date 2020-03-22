@@ -7,7 +7,6 @@ import spotipy
 import sys
 from dotenv import load_dotenv
 from pprint import pprint
-import secrets
 
 # Loading Spotify API Data from Env
 load_dotenv()
@@ -19,11 +18,8 @@ sp = spotipy.Spotify(client_credentials_manager=SpotifyClientCredentials())
 client = pymongo.MongoClient(
     "mongodb+srv://admin:admin@cluster0-jgksl.mongodb.net/test?retryWrites=true&w=majority")
 
-# Creating/Pointer new db
-db = client.songMatch
 
-
-def topTenFetcher(artistName):
+def songFetcher(artistName):
     # Fetches top 10 songs by artistName
 
     # Query to getartist URI
@@ -43,6 +39,9 @@ def topTenFetcher(artistName):
 
 
 def countChecker(artistName):
+
+    # Creating/Pointer new db
+    db = client.songMatch
 
     # creating/pointer new collection
     count = db.count
@@ -69,42 +68,3 @@ def countChecker(artistName):
 def getSong(artistName):
     # gets the song name
     accessCount = countChecker(artistName)
-
-    if accessCount < 10:
-        tracks = topTenFetcher(artistName)
-        song = secrets.choice(tracks)
-        return song
-    else:
-        return ("More than 10")
-
-
-def getUniqueSong(artistName):
-    artist = db[artistName]
-    exist = True
-    while exist:
-        track = getSong(artistName)
-        count = artist.count_documents({"song": track})
-        if count == 0:
-            exist = False
-    return track
-
-
-def getSongByAnswer(artistName, score):
-    artist = db[artistName]
-    song = artist.find_one({"answer": score})
-    track = getUniqueSong(artistName)
-    if song == None:
-
-        songDocument = {
-            "answer": score,
-            "song": track
-        }
-
-        artist.insert_one(songDocument)
-        song = artist.find_one({"answer": score})
-    return song["song"]
-
-
-artist = "alan walker"
-score = '111'
-print(getSongByAnswer(artist, score))
