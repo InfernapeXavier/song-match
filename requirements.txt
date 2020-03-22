@@ -17,6 +17,7 @@ idna==2.9
 jmespath==0.9.5
 packaging==20.3
 pip-upgrader==1.4.15
+pprint==0.1
 pycodestyle==2.5.0
 pymongo==3.10.1
 pyparsing==2.4.6
