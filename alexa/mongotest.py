@@ -56,6 +56,7 @@ def getTracksFromAlbum(album):
         tracks.extend(results['items'])
     for track in tracks:
         trackList.append(track['name'])
+    return trackList
 
 
 def allTracksFetcher(artistName):
@@ -67,8 +68,11 @@ def allTracksFetcher(artistName):
     while results['next']:
         results = sp.next(results)
         albums.extend(results['items'])
+    trackList = []
     for album in albums:
-        getTracksFromAlbum(album)
+        trackList.extend(getTracksFromAlbum(album))
+    print("here")
+    return trackList
 
 
 def countChecker(artistName):
@@ -119,9 +123,9 @@ def getSongs(artistName):
 
     if accessCount < 10:
         tracks = topTenFetcher(artistName)
-        return tracks
     else:
-        return ("More than 10")
+        tracks = allTracksFetcher(artistName)
+    return tracks
 
 
 def getUniqueSong(artistName):
@@ -144,7 +148,7 @@ def getUniqueSong(artistName):
 
 
 def updateCount(artistName):
-    count = db.count
+    count = db.song_count
     countData = count.update_one(
         {"artist": artistName}, {"$inc": {"count": 1}})
 
@@ -165,5 +169,5 @@ def getSongByAnswer(artistName, score):
 
 
 artist = "alan walker"
-for score in range(0, 10):
+for score in range(0, 15):
     print(getSongByAnswer(artist, score))
