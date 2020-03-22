@@ -11,24 +11,28 @@ import sys
 load_dotenv()
 
 
-birdy_uri = 'spotify:artist:7vk5e3vY1uw9plTHJAMwjN'
+artistName = "Imagine Dragons"
+
 
 client_credentials_manager = SpotifyClientCredentials()
 sp = spotipy.Spotify(client_credentials_manager=client_credentials_manager)
 
-results = sp.artist_albums(birdy_uri, album_type='album')
+
+# Query to get artist URI
+results = sp.search(q='artist:' + artistName, type='artist')
+items = results['artists']['items']
+
+if len(items) > 0:
+    artist = items[0]
+    urn = artist['uri']
+
+birdy_uri = urn
+
+results = sp.artist_albums(birdy_uri, album_type='album,single')
 albums = results['items']
 while results['next']:
     results = sp.next(results)
     albums.extend(results['items'])
-
-results = sp.artist_albums(birdy_uri, album_type='single')
-singles = results['items']
-while results['next']:
-    results = sp.next(results)
-    singles.extend(results['items'])
-
-albums.extend(singles)
 
 li = list()
 
