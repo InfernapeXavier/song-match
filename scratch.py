@@ -1,27 +1,31 @@
 #  Scratch File to test logic
 
-from pathlib import Path  # python3 only
-from spotipy.oauth2 import SpotifyClientCredentials
-import spotipy
-import sys
-from dotenv import load_dotenv
-
-# Loading Spotify API Data from Env
-load_dotenv()
-
-name = 'Bastille'
+import datetime
+import pymongo
+from pymongo import MongoClient
 
 
-sp = spotipy.Spotify(client_credentials_manager=SpotifyClientCredentials())
+print(pymongo.version)
 
-results = sp.search(q='artist:' + name, type='artist')
-items = results['artists']['items']
 
-if len(items) > 0:
-    artist = items[0]
-    urn = artist['uri']
+client = pymongo.MongoClient(
+    "mongodb+srv://admin:admin@cluster0-jgksl.mongodb.net/test?retryWrites=true&w=majority")
 
-response = sp.artist_top_tracks(urn)
 
-for track in response['tracks']:
-    print(track['name'])
+# Creating new db
+db = client.gettingStarted
+
+# creating new collection
+people = db.people
+
+# defining document
+personDocument = {
+    "name": {"first": "Alan", "last": "Turing"},
+    "birth": datetime.datetime(1912, 6, 23),
+    "death": datetime.datetime(1954, 6, 7),
+    "contribs": ["Turing machine", "Turing test", "Turingery"],
+    "views": 1250000
+}
+
+# inserting document
+people.insert_one(personDocument)
