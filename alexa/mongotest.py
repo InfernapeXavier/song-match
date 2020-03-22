@@ -7,6 +7,7 @@ import spotipy
 import sys
 from dotenv import load_dotenv
 from pprint import pprint
+import secrets
 
 # Loading Spotify API Data from Env
 load_dotenv()
@@ -18,9 +19,31 @@ sp = spotipy.Spotify(client_credentials_manager=SpotifyClientCredentials())
 client = pymongo.MongoClient(
     "mongodb+srv://admin:admin@cluster0-jgksl.mongodb.net/test?retryWrites=true&w=majority")
 
+# Creating/Pointer new db
+db = client.song_match
 
-def songFetcher(artistName):
+
+def topTenFetcher(artistName):
     # Fetches top 10 songs by artistName
+
+    # Query to getartist URI
+    results = sp.search(q='artist:' + artistName, type='artist')
+    items = results['artists']['items']
+
+    if len(items) > 0:
+        artist = items[0]
+        urn = artist['uri']
+
+    # Query to fetch top tracks
+    response = sp.artist_top_tracks(urn)
+    trackList = []
+    for track in response['tracks']:
+        trackList.append(track['name'])
+    return trackList
+
+
+def allTracksFetcher(artistName):
+    # Fetches all songs by artistName
 
     # Query to getartist URI
     results = sp.search(q='artist:' + artistName, type='artist')
@@ -40,11 +63,8 @@ def songFetcher(artistName):
 
 def countChecker(artistName):
 
-    # Creating/Pointer new db
-    db = client.songMatch
-
     # creating/pointer new collection
-    count = db.count
+    count = db.song_count
 
     # fetch artist counter
     countData = count.find_one({"artist": artistName})
@@ -65,6 +85,75 @@ def countChecker(artistName):
     return accessCount
 
 
-def getSong(artistName):
+def insertSong(artistName, song):
+    songlist = db.songlist
+    listData = songlist.find_one({"artist": artistName})
+    li = []
+    li.append(song)
+    if listData == None:
+        listDocument = {
+            "artist": artistName,
+            "tracks": li
+        }
+        songlist.insert_one(listDocument)
+    else:
+        listData = songlist.update_one(
+            {"artist": artistName},
+            {"$addToSet": {"tracks": song}}
+        )
+
+
+def getSongs(artistName):
     # gets the song name
     accessCount = countChecker(artistName)
+
+    if accessCount < 10:
+        tracks = topTenFetcher(artistName)
+        return tracks
+    else:
+        return ("More than 10")
+
+
+def getUniqueSong(artistName):
+    artist = db[artistName]
+    exist = True
+    songlist = db.songlist
+    songData = songlist.find_one({"artist": artistName})
+
+    trackslist = getSongs(artistName)
+
+    if songData == None:
+        newtracks = trackslist
+    else:
+        existingTracks = songData["tracks"]
+        newtracks = set(trackslist).difference(set(existingTracks))
+    newtracks = list(newtracks)
+    track = secrets.choice(newtracks)
+    insertSong(artistName, track)
+    return track
+
+
+def updateCount(artistName):
+    count = db.count
+    countData = count.update_one(
+        {"artist": artistName}, {"$inc": {"count": 1}})
+
+
+def getSongByAnswer(artistName, score):
+    artist = db[artistName]
+    song = artist.find_one({"answer": score})
+    if song == None:
+        track = getUniqueSong(artistName)
+        songDocument = {
+            "answer": score,
+            "song": track
+        }
+        artist.insert_one(songDocument)
+        updateCount(artistName)
+        song = artist.find_one({"answer": score})
+    return song["song"]
+
+
+artist = "alan walker"
+for score in range(0, 10):
+    print(getSongByAnswer(artist, score))
