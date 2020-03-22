@@ -1,5 +1,5 @@
 from alexa.fetcher import *
-
+from alexa import mongoutils
 # TODO: Add SSML
 
 # SSML Builders
@@ -96,3 +96,8 @@ def getSong(artistName, score):
 # Repeat in case someone is stuck at the end
 def repeatFinal(artistName, song):
     return "Your " + artistName + " song is " + song + "."
+
+
+# Fetching Song
+def getFinalResponse(artistName, score):
+    mongoutils.getSongByAnswer(artistName, score)
