@@ -77,13 +77,13 @@ questionHelpSet = {
 # Scoring
 
 
-def getScore(artistName, slots):
+def getScore(current, slots):
     score = ""
     for _, slot in six.iteritems(slots):
-        if slot.value == artistName:
+        if slot.value is None:
             pass
         else:
-            score = score+slot.value
+            score = current+slot.value
     return score
 
 

@@ -11,10 +11,8 @@ gibberish
 trigger fall back
 purple
 red
-movie
-dinner
-venice
-hawaii
+starbucks
+italy
 start over
 harry potter
 lord of the rings

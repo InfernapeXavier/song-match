@@ -116,6 +116,8 @@ class QuizAnswerHandler(AbstractRequestHandler):
         attr["questionNumber"] += 1
         artistName = attr["artist"]
         questionNumber = attr["questionNumber"]
+        score = attr["score"]
+        attr["score"] = getScore(score, slots)
 
         if questionNumber < 4:
             speak_output = getQuestion(artistName, questionNumber)
@@ -124,7 +126,6 @@ class QuizAnswerHandler(AbstractRequestHandler):
             return (handler_input.response_builder.speak(speak_output).ask(reprompt).response)
 
         else:
-            attr["score"] = getScore(artistName, slots)
             score = attr["score"]
             attr['song'] = getFinalResponse(artistName, score)
             song = attr['song']
