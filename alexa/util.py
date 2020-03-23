@@ -88,4 +88,4 @@ def repeatFinal(artistName, song):
 
 # Fetching Song
 def getFinalResponse(artistName, score):
-    mongoutils.getSongByAnswer(artistName, score)
+    return mongoutils.getSongByAnswer(artistName, score)
