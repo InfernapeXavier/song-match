@@ -104,7 +104,7 @@ class QuizAnswerHandler(AbstractRequestHandler):
     def can_handle(self, handler_input):
         # type: (HandlerInput) -> bool
         attr = handler_input.attributes_manager.session_attributes
-        return is_intent_name("AnswerIntent")(handler_input)
+        return (is_intent_name("AnswerIntent")(handler_input) and attr.get("state") == "QUIZ")
 
     def handle(self, handler_input):
         # type: (HandlerInput) -> Response
@@ -113,12 +113,6 @@ class QuizAnswerHandler(AbstractRequestHandler):
         slots = handler_input.request_envelope.request.intent.slots
         attr = handler_input.attributes_manager.session_attributes
 
-        answer = slots["answer"].value
-        score = attr["score"]
-        attr["score"] = getScore(score, answer)
-        score = attr["score"]
-
-        # speak_output = "Score is " + attr["score"]
         attr["questionNumber"] += 1
         artistName = attr["artist"]
         questionNumber = attr["questionNumber"]
@@ -130,6 +124,9 @@ class QuizAnswerHandler(AbstractRequestHandler):
             return (handler_input.response_builder.speak(speak_output).ask(reprompt).response)
 
         else:
+            score = attr["score"]
+            attr["score"] = getScore(artistName, slots)
+            score = attr["score"]
             attr['song'] = getFinalResponse(artistName, score)
             song = attr['song']
             speak_output = song

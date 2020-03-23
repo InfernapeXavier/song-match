@@ -11,12 +11,12 @@ welcomeReprompt = "I'm sorry, I didn't understand you. My favourite artist is Al
 
 
 def capturedArtist(artistName):
-    builder = excitedStart + "I love songs by " + artistName + " too!" + emotionEnd
+    builder = excitedStart + "I love " + artistName + " too!" + emotionEnd
     return builder
 
 
 def startQuiz(artistName):
-    builder = "Now, whenever you're ready, say Start Quiz and answer the three questions to find your " + \
+    builder = "Now, whenever you're ready, say Start Quiz to find your " + \
         artistName + " song!"
     return builder
 
@@ -24,7 +24,7 @@ def startQuiz(artistName):
 # Help/Error/End Messages
 helpWithArtistMessage = "You can tell me the name of your favourite singer or band and I'll take note."
 goodbyeMessage = "Goodbye!"
-errorMessage = "Sorry, I couldn't understand what you said. Can you reformulate?"
+errorMessage = "Sorry, I couldn't understand what you said. Can you please reformulate?"
 fallbackErrorMessage = "Sorry, it seems like my dumb developer forgot to include that feature. However, for now, you can try saying Start Quiz!"
 
 
@@ -76,9 +76,13 @@ questionHelpSet = {
 # Scoring
 
 
-def getScore(current, answer):
-    answer = answer.lower()
-    return current+answer
+def getScore(artistName, slots):
+    score = ""
+    for slot in slots:
+        if slot.value == artistName:
+            continue
+        else:
+            score = score+slot.value
 
 
 # Repeat in case someone is stuck at the end
@@ -88,4 +92,5 @@ def repeatFinal(artistName, song):
 
 # Fetching Song
 def getFinalResponse(artistName, score):
-    return mongoutils.getSongByAnswer(artistName, score)
+    song = mongoutils.getSongByAnswer(artistName, score)
+    return "Your " + artistName + " song is " + song + "."
