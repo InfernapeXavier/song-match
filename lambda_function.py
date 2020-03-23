@@ -118,11 +118,12 @@ class QuizAnswerHandler(AbstractRequestHandler):
         attr["questionNumber"] += 1
         artistName = attr["artist"]
         questionNumber = attr["questionNumber"]
+        questionSet = attr["questionSet"]
         score = attr["score"]
         attr["score"] = getScore(score, slots)
 
         if questionNumber < 4:
-            speak_output = getQuestion(artistName, questionNumber)
+            speak_output = getQuestion(questionSet, questionNumber)
             reprompt = questionHelp(artistName, questionNumber)
 
             return (handler_input.response_builder.speak(speak_output).ask(reprompt).response)
