@@ -81,7 +81,7 @@ def getScore(artistName, slots):
     score = ""
     for _, slot in six.iteritems(slots):
         if slot.value == artistName:
-            continue
+            pass
         else:
             score = score+slot.value
     return score
