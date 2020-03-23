@@ -79,11 +79,7 @@ questionHelpSet = {
 
 def getScore(current, answer):
     answer = answer.lower()
-    ans = ['purple', 'movie', 'venice', 'harry potter', 'drama', 'soccer']
-    if answer in ans:
-        return current + '1'
-    else:
-        return current + '2'
+    return current+answer
 
 
 # Fetching Song
