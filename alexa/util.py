@@ -50,14 +50,14 @@ def getQuestion(artistName, questionNumber):
 # Question Sets
 questionSet = {
     1: [
-        "Which hair color do you prefer, purple or red?",
-        "What do you think is a better first date, a movie or a dinner?",
-        "Which city would you prefer for a vacation getaway, venice or hawaii?"
+        "What color do you want to dye your hair next?",
+        "Which place makes a better hot chocolate, starbucks or dunkin donuts",
+        "Which country is ideal for a vacation getaway?"
     ],
     2: [
-        "Which book series do you prefer, harry potter or lord of the rings?",
-        "Which movie genre do you like, drama or romance?",
-        "Which sport do you prefer, Soccer or football?"
+        "What is the last book that you read?",
+        "What is your favorite movie genre?",
+        "What is your favorite sport?"
     ]
 }
 
