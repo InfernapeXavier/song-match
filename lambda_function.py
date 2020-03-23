@@ -133,8 +133,9 @@ class QuizAnswerHandler(AbstractRequestHandler):
             attr['song'] = getFinalResponse(artistName, score)
             song = attr['song']
             speak_output = song
-
-            return (handler_input.response_builder.speak(speak_output).ask(exitMessage).response)
+            handler_input.response_builder.speak(
+                speak_output + exitMessage).ask(exitMessage)
+            return (handler_input.response_builder.response)
 
 
 class HelpIntentHandler(AbstractRequestHandler):
@@ -210,8 +211,8 @@ class FallbackIntentHandler(AbstractRequestHandler):
         # type: (HandlerInput) -> Response
 
         speak_output = fallbackErrorMessage
-
-        return (handler_input.response_builder.speak(speak_output).response)
+        reprompt = errorMessage
+        return (handler_input.response_builder.speak(speak_output).ask(reprompt).response)
 
 
 class CatchAllExceptionHandler(AbstractExceptionHandler):
@@ -227,13 +228,12 @@ class CatchAllExceptionHandler(AbstractExceptionHandler):
     def handle(self, handler_input, exception):
         # type: (HandlerInput, Exception) -> Response
         attr = handler_input.attributes_manager.session_attributes
-        if attr["state"] == "INITIALIZING":
-            if "artist" in attr:
-                artist = attr["artist"]
-                speak_output = helpWithQuizMessage(artist)
-            else:
-                speak_output = helpWithArtistMessage
+        if "artist" in attr:
+            artist = attr["artist"]
+            speak_output = helpWithQuizMessage(artist)
         else:
+            speak_output = helpWithArtistMessage
+        if attr["state"] == "QUIZ":
             if "song" in attr:
                 song = attr["song"]
                 artist = attr["artist"]
