@@ -87,7 +87,9 @@ class StartQuizIntentHandler(AbstractRequestHandler):
             attr["questionNumber"] = 1
             questionNumber = attr["questionNumber"]
             artistName = attr["artist"]
-            speak_output = getQuestion(artistName, questionNumber)
+            attr["questionSet"] = getQuestionSet(artistName)
+            questionSet = attr["questionSet"]
+            speak_output = getQuestion(questionSet, questionNumber)
             reprompt = questionHelp(artistName, questionNumber)
 
             return (handler_input.response_builder.speak(speak_output).ask(reprompt).response)
@@ -131,7 +133,7 @@ class QuizAnswerHandler(AbstractRequestHandler):
             song = attr['song']
             speak_output = song
 
-            return (handler_input.response_builder.speak(speak_output).set_should_end_session(True).response)
+            return (handler_input.response_builder.speak(speak_output).ask(exitMessage).response)
 
 
 class HelpIntentHandler(AbstractRequestHandler):

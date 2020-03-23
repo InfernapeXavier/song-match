@@ -1,3 +1,4 @@
+import secrets
 from alexa import mongoutils
 import six
 # TODO: Add SSML
@@ -27,6 +28,7 @@ helpWithArtistMessage = "You can tell me the name of your favourite singer or ba
 goodbyeMessage = "Goodbye!"
 errorMessage = "Sorry, I couldn't understand what you said. Can you please reformulate?"
 fallbackErrorMessage = "Sorry, it seems like my dumb developer forgot to include that feature. However, for now, you can try saying Start Quiz!"
+exitMessage = "To try the quiz with another artist, just say their name. To exit, say Bye!"
 
 
 def questionHelp(artistName, questionNumber):
@@ -40,11 +42,16 @@ def helpWithQuizMessage(artistName):
     return "You can say Start Quiz to start the quiz. Alternatively, you can say the name of another artist if you wish to change from " + artistName
 
 
-def getQuestion(artistName, questionNumber):
-    if artistName[0].lower() < 'n':
-        return questionSet[1][questionNumber-1]
+def getQuestion(setNumber, questionNumber):
+    return questionSet[setNumber][questionNumber-1]
+
+
+def getQuestionSet(artistName):
+    if artistName[0].lower() < "n":
+        setNumber = 1
     else:
-        return questionSet[2][questionNumber-1]
+        setNumber = 2
+    return setNumber
 
 
 # Question Sets
@@ -74,9 +81,8 @@ questionHelpSet = {
     ]
 }
 
+
 # Scoring
-
-
 def getScore(current, slots):
     score = ""
     for _, slot in six.iteritems(slots):
