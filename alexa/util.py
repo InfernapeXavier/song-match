@@ -1,4 +1,3 @@
-from alexa.fetcher import *
 from alexa import mongoutils
 # TODO: Add SSML
 
@@ -80,13 +79,6 @@ questionHelpSet = {
 def getScore(current, answer):
     answer = answer.lower()
     return current+answer
-
-
-# Fetching Song
-def getSong(artistName, score):
-    trackList = songFetcher(artistName)
-    index = getIndex(score)
-    return "Your " + artistName + " song is " + trackList[index] + "."
 
 
 # Repeat in case someone is stuck at the end

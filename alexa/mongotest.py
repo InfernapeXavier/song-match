@@ -19,8 +19,3 @@ client = pymongo.MongoClient(
 
 # Creating/Pointer new db
 db = client.song_match
-
-
-artist = "alan walker"
-for score in range(0, 15):
-    print(getSongByAnswer(artist, score))
