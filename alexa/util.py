@@ -1,4 +1,5 @@
 from alexa import mongoutils
+import six
 # TODO: Add SSML
 
 # SSML Builders
@@ -11,7 +12,7 @@ welcomeReprompt = "I'm sorry, I didn't understand you. My favourite artist is Al
 
 
 def capturedArtist(artistName):
-    builder = excitedStart + "I love " + artistName + " too!" + emotionEnd
+    builder = excitedStart + "I love " + artistName + "!" + emotionEnd
     return builder
 
 
@@ -78,11 +79,12 @@ questionHelpSet = {
 
 def getScore(artistName, slots):
     score = ""
-    for slot in slots:
+    for _, slot in six.iteritems(slots):
         if slot.value == artistName:
             continue
         else:
             score = score+slot.value
+    return score
 
 
 # Repeat in case someone is stuck at the end
