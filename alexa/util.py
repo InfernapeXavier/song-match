@@ -6,6 +6,8 @@ import six
 # SSML Builders
 excitedStart = '<amazon:emotion name="excited" intensity="medium">'
 emotionEnd = '</amazon:emotion>'
+prosodyStart = '<prosody volume="medium">'
+prosodyEnd = '</prosody>'
 
 # Welcome/Start Messages
 welcomeMessage = "Hello! Welcome to Song Match. I'll help you find the song that best defines you! Who is your favourite artist?"
@@ -13,7 +15,8 @@ welcomeReprompt = "I'm sorry, I didn't understand you. My favourite artist is Al
 
 
 def capturedArtist(artistName):
-    builder = excitedStart + "I love " + artistName + "!" + emotionEnd
+    builder = excitedStart + prosodyStart + \
+        "That's a great choice!" + prosodyEnd + emotionEnd
     return builder
 
 

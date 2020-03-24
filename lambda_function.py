@@ -164,24 +164,24 @@ class HelpIntentHandler(AbstractRequestHandler):
 
     def handle(self, handler_input):
         # type: (HandlerInput) -> Response
-
         attr = handler_input.attributes_manager.session_attributes
-        if attr["state"] == "INITIALIZING":
-            if "artist" in attr:
-                artist = attr["artist"]
-                speak_output = helpWithQuizMessage(artist)
-            else:
-                speak_output = helpWithArtistMessage
+
+        if "artist" in attr:
+            artist = attr["artist"]
+            speak_output = helpWithQuizMessage(artist)
         else:
-            if "song" in attr:
-                song = attr["song"]
-                artist = attr["artist"]
-                speak_output = finalResponse(artist, song)
-            else:
-                question = attr["questionNumber"]
-                artist = attr["artist"]
-                questionSet = attr["questionSet"]
-                speak_output = questionHelp(questionSet, question)
+            speak_output = helpWithArtistMessage
+
+        if "song" in attr:
+            song = attr["song"]
+            artist = attr["artist"]
+            speak_output = finalResponse(artist, song)
+
+        if attr["state"] == "QUIZ":
+            question = attr["questionNumber"]
+            artist = attr["artist"]
+            questionSet = attr["questionSet"]
+            speak_output = questionHelp(questionSet, question)
 
         return (handler_input.response_builder.speak(speak_output).ask(
             errorMessage).response)
@@ -253,16 +253,16 @@ class CatchAllExceptionHandler(AbstractExceptionHandler):
         else:
             speak_output = helpWithArtistMessage
 
+        if "song" in attr:
+            song = attr["song"]
+            artist = attr["artist"]
+            speak_output = finalResponse(artist, song)
+
         if attr["state"] == "QUIZ":
-            if "song" in attr:
-                song = attr["song"]
-                artist = attr["artist"]
-                speak_output = finalResponse(artist, song)
-            else:
-                question = attr["questionNumber"]
-                artist = attr["artist"]
-                questionSet = attr["questionSet"]
-                speak_output = questionFallback(questionSet, question)
+            question = attr["questionNumber"]
+            artist = attr["artist"]
+            questionSet = attr["questionSet"]
+            speak_output = questionFallback(questionSet, question)
 
         return (handler_input.response_builder.speak(speak_output).ask(
             errorMessage).response)
