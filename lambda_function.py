@@ -6,10 +6,12 @@
 # This sample is built using the handler classes approach in skill builder.
 from ask_sdk_core.utils import is_request_type, is_intent_name
 from ask_sdk_model import Response
+from ask_sdk_model import Dialog as dialog
+from ask_sdk_model import (
+    Intent, IntentConfirmationStatus, Slot, SlotConfirmationStatus)
 from ask_sdk_core.handler_input import HandlerInput
-from ask_sdk_core.dispatch_components import AbstractRequestInterceptor
-from ask_sdk_core.dispatch_components import AbstractExceptionHandler
-from ask_sdk_core.dispatch_components import AbstractRequestHandler
+from ask_sdk_core.dispatch_components import (
+    AbstractRequestInterceptor, AbstractExceptionHandler, AbstractRequestHandler)
 from ask_sdk_core.skill_builder import CustomSkillBuilder
 from alexa.util import *
 import logging
@@ -40,8 +42,12 @@ class LaunchRequestHandler(AbstractRequestHandler):
         attr = handler_input.attributes_manager.session_attributes
         attr["state"] = "INITIALIZING"
 
+        directive = dialog.ElicitSlotDirective(
+            slot_to_elicit="artistName"
+        )
+
         handler_input.response_builder.speak(speech).ask(reprompt)
-        return handler_input.response_builder.response
+        return handler_input.response_builder.add_directive(directive)
 
 
 class CaptureArtistIntentHandler(AbstractRequestHandler):
