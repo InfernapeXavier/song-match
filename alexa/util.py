@@ -95,7 +95,7 @@ def getScore(current, slots):
 
 # Repeat in case someone is stuck at the end
 def repeatFinal(artistName, song):
-    return "Your " + artistName + " song is " + song + "."
+    return "Your " + artistName + " song is " + song + "." + exitMessage
 
 
 # Fetching Song

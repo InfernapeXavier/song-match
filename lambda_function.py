@@ -119,7 +119,8 @@ class QuizAnswerHandler(AbstractRequestHandler):
     def can_handle(self, handler_input):
         # type: (HandlerInput) -> bool
         attr = handler_input.attributes_manager.session_attributes
-        return (is_intent_name("AnswerIntent")(handler_input) and attr.get("state") == "QUIZ")
+        state = attr["state"]
+        return (is_intent_name("AnswerIntent")(handler_input) and state == "QUIZ")
 
     def handle(self, handler_input):
         # type: (HandlerInput) -> Response
