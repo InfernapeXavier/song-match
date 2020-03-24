@@ -70,14 +70,14 @@ questionSet = {
 
 questionHelpSet = {
     1: [
-        "Sorry, that didn't sound like a valid answer, you can either say purple or red",
-        "Sorry, that didn't sound like a valid answer, you can either say movie or dinner",
-        "Sorry, that didn't sound like a valid answer, you can either say venice or hawaii"
+        "Sorry, that didn't sound like a valid answer, you can say the name of any color",
+        "Sorry, that didn't sound like a valid answer, you can say either starbucks or dunkin donuts",
+        "Sorry, that didn't sound like a valid answer, you can say the name of any country"
     ],
     2: [
-        "Sorry, that didn't sound like a valid answer, you can either say harry potter or lord of the rings",
-        "Sorry, that didn't sound like a valid answer, you can either say drama or romance",
-        "Sorry, that didn't sound like a valid answer, you can either say soccer or football"
+        "Sorry, that didn't sound like a valid answer, you can say the name of any book",
+        "Sorry, that didn't sound like a valid answer, you can say whatever genre you like, for instance, Horror",
+        "Sorry, that didn't sound like a valid answer, you can say the name of any sport like soccer or football"
     ]
 }
 

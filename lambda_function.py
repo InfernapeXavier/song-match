@@ -49,7 +49,9 @@ class CaptureArtistIntentHandler(AbstractRequestHandler):
 
     def can_handle(self, handler_input):
         # type: (HandlerInput) -> bool
-        return is_intent_name("CaptureArtistIntent")(handler_input)
+        attr = handler_input.attributes_manager.session_attributes
+        state = attr["state"]
+        return (is_intent_name("CaptureArtistIntent")(handler_input) and (state != "QUIZ"))
 
     def handle(self, handler_input):
         # type: (HandlerInput) -> Response
@@ -61,7 +63,7 @@ class CaptureArtistIntentHandler(AbstractRequestHandler):
         attr["artist"] = artist
 
         speak_output = capturedArtist(artist) + " " + startQuiz(artist)
-        reprompt = welcomeReprompt
+        reprompt = helpWithQuizMessage(artist)
 
         return (handler_input.response_builder.speak(speak_output).ask(
             reprompt).response)
@@ -72,7 +74,18 @@ class StartQuizIntentHandler(AbstractRequestHandler):
 
     def can_handle(self, handler_input):
         # type: (HandlerInput) -> bool
-        return is_intent_name("StartQuizIntent")(handler_input) or is_intent_name("AMAZON.StartoverIntent")(handler_input)
+        attr = handler_input.attributes_manager.session_attributes
+        state = attr["state"]
+        return (
+            (
+                is_intent_name("StartQuizIntent")(handler_input) or
+                is_intent_name("AMAZON.StartoverIntent")(handler_input)
+            )
+            and
+            (
+                state != "QUIZ"
+            )
+        )
 
     def handle(self, handler_input):
         # type: (HandlerInput) -> Response
@@ -228,11 +241,13 @@ class CatchAllExceptionHandler(AbstractExceptionHandler):
     def handle(self, handler_input, exception):
         # type: (HandlerInput, Exception) -> Response
         attr = handler_input.attributes_manager.session_attributes
+
         if "artist" in attr:
             artist = attr["artist"]
             speak_output = helpWithQuizMessage(artist)
         else:
             speak_output = helpWithArtistMessage
+
         if attr["state"] == "QUIZ":
             if "song" in attr:
                 song = attr["song"]

@@ -8,6 +8,7 @@ stop this
 start quiz
 sorry
 gibberish
+kacchra
 trigger fall back
 purple
 red
