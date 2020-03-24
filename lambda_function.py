@@ -6,10 +6,12 @@
 # This sample is built using the handler classes approach in skill builder.
 from ask_sdk_core.utils import is_request_type, is_intent_name
 from ask_sdk_model import Response
+from ask_sdk_model.dialog import ElicitSlotDirective
+from ask_sdk_model import (
+    Intent, IntentConfirmationStatus, Slot, SlotConfirmationStatus)
 from ask_sdk_core.handler_input import HandlerInput
-from ask_sdk_core.dispatch_components import AbstractRequestInterceptor
-from ask_sdk_core.dispatch_components import AbstractExceptionHandler
-from ask_sdk_core.dispatch_components import AbstractRequestHandler
+from ask_sdk_core.dispatch_components import (
+    AbstractRequestInterceptor, AbstractExceptionHandler, AbstractRequestHandler)
 from ask_sdk_core.skill_builder import CustomSkillBuilder
 from alexa.util import *
 import logging
