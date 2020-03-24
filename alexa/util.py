@@ -59,7 +59,7 @@ def getQuestionSet(artistName):
 questionSet = {
     1: [
         "What color do you want to dye your hair next?",
-        "Which place makes a better hot chocolate, starbucks or dunkin donuts",
+        "Which place makes a better hot chocolate, starbucks or dunkin donuts?",
         "Which country is ideal for a vacation getaway?"
     ],
     2: [
@@ -113,6 +113,6 @@ def finalResponse(artistName, song):
 
 
 # Fetching Song
-def getFinalResponse(artistName, score):
+def getSong(artistName, score):
     song = mongoutils.getSongByAnswer(artistName, score)
     return song

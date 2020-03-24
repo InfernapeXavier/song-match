@@ -144,11 +144,12 @@ class QuizAnswerHandler(AbstractRequestHandler):
 
         else:
             score = attr["score"]
-            attr['song'] = getFinalResponse(artistName, score)
+            attr['song'] = getSong(artistName, score)
             song = attr['song']
             speak_output = finalResponse(artistName, song)
+            attr["state"] = "INITIALIZING"
             handler_input.response_builder.speak(
-                speak_output + " " + exitMessage).ask(exitMessage)
+                speak_output).ask(exitMessage)
             return (handler_input.response_builder.response)
 
 
