@@ -103,7 +103,7 @@ class StartQuizIntentHandler(AbstractRequestHandler):
             attr["questionSet"] = getQuestionSet(artistName)
             questionSet = attr["questionSet"]
             speak_output = getQuestion(questionSet, questionNumber)
-            reprompt = questionHelp(artistName, questionNumber)
+            reprompt = questionHelp(questionSet, questionNumber)
 
             return (handler_input.response_builder.speak(speak_output).ask(reprompt).response)
 
@@ -138,7 +138,7 @@ class QuizAnswerHandler(AbstractRequestHandler):
 
         if questionNumber < 4:
             speak_output = getQuestion(questionSet, questionNumber)
-            reprompt = questionHelp(artistName, questionNumber)
+            reprompt = questionHelp(questionSet, questionNumber)
 
             return (handler_input.response_builder.speak(speak_output).ask(reprompt).response)
 
@@ -146,9 +146,9 @@ class QuizAnswerHandler(AbstractRequestHandler):
             score = attr["score"]
             attr['song'] = getFinalResponse(artistName, score)
             song = attr['song']
-            speak_output = song
+            speak_output = finalResponse(artistName, song)
             handler_input.response_builder.speak(
-                speak_output + exitMessage).ask(exitMessage)
+                speak_output + " " + exitMessage).ask(exitMessage)
             return (handler_input.response_builder.response)
 
 
@@ -173,11 +173,12 @@ class HelpIntentHandler(AbstractRequestHandler):
             if "song" in attr:
                 song = attr["song"]
                 artist = attr["artist"]
-                speak_output = repeatFinal(artist, song)
+                speak_output = finalResponse(artist, song)
             else:
                 question = attr["questionNumber"]
                 artist = attr["artist"]
-                speak_output = questionHelp(artist, question)
+                questionSet = attr["questionSet"]
+                speak_output = questionHelp(questionSet, question)
 
         return (handler_input.response_builder.speak(speak_output).ask(
             errorMessage).response)
@@ -253,11 +254,12 @@ class CatchAllExceptionHandler(AbstractExceptionHandler):
             if "song" in attr:
                 song = attr["song"]
                 artist = attr["artist"]
-                speak_output = repeatFinal(artist, song)
+                speak_output = finalResponse(artist, song)
             else:
                 question = attr["questionNumber"]
                 artist = attr["artist"]
-                speak_output = questionHelp(artist, question)
+                questionSet = attr["questionSet"]
+                speak_output = questionFallback(questionSet, question)
 
         return (handler_input.response_builder.speak(speak_output).ask(
             errorMessage).response)

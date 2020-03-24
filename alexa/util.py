@@ -31,11 +31,12 @@ fallbackErrorMessage = "Sorry, it seems like my dumb developer forgot to include
 exitMessage = "To try the quiz with another artist, just say their name. To exit, say Bye!"
 
 
-def questionHelp(artistName, questionNumber):
-    if artistName[0].lower() < 'n':
-        return questionHelpSet[1][questionNumber-1]
-    else:
-        return questionHelpSet[2][questionNumber-1]
+def questionHelp(setNumber, questionNumber):
+    return questionHelpSet[setNumber][questionNumber-1]
+
+
+def questionFallback(setNumber, questionNumber):
+    return questionFallbackSet[setNumber][questionNumber-1]
 
 
 def helpWithQuizMessage(artistName):
@@ -70,6 +71,19 @@ questionSet = {
 
 questionHelpSet = {
     1: [
+        "You can say the name of any color",
+        "You can say either starbucks or dunkin donuts",
+        "You can say the name of any country"
+    ],
+    2: [
+        "You can say the name of any book",
+        "You can say whatever genre you like, for instance, Horror",
+        "You can say the name of any sport like soccer or football"
+    ]
+}
+
+questionFallbackSet = {
+    1: [
         "Sorry, that didn't sound like a valid answer, you can say the name of any color",
         "Sorry, that didn't sound like a valid answer, you can say either starbucks or dunkin donuts",
         "Sorry, that didn't sound like a valid answer, you can say the name of any country"
@@ -94,11 +108,11 @@ def getScore(current, slots):
 
 
 # Repeat in case someone is stuck at the end
-def repeatFinal(artistName, song):
-    return "Your " + artistName + " song is " + song + "." + exitMessage
+def finalResponse(artistName, song):
+    return "Your " + artistName + " song is " + song + "." + " " + exitMessage
 
 
 # Fetching Song
 def getFinalResponse(artistName, score):
     song = mongoutils.getSongByAnswer(artistName, score)
-    return "Your " + artistName + " song is " + song + "."
+    return song
